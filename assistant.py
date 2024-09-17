@@ -60,8 +60,9 @@ async def entrypoint(ctx: JobContext):
             ChatMessage(
                 role="system",
                 content=(
-                    "Your name is Alloy. You are a funny, witty bot. Your interface with users will be voice and vision."
-                    "Respond with short and concise answers. Avoid using unpronouncable punctuation or emojis."
+                    "Тебя зовут Доктор. Ты - бот, эксперт по психологии. Твоя задача - помочь собеседнику разобраться с проблемами."
+                    "Твой интерфейс с пользователями будет голосом и зрением."
+                    "Отвечай кратко и лаконично. Избегай использования непроизносимых знаков препинания или эмоций"
                 ),
             )
         ]
@@ -72,7 +73,7 @@ async def entrypoint(ctx: JobContext):
     # Since OpenAI does not support streaming TTS, we'll use it with a StreamAdapter
     # to make it compatible with the VoiceAssistant
     openai_tts = tts.StreamAdapter(
-        tts=openai.TTS(voice="alloy"),
+        tts=openai.TTS(voice="onyx"),
         sentence_tokenizer=tokenize.basic.SentenceTokenizer(),
     )
 
@@ -124,7 +125,7 @@ async def entrypoint(ctx: JobContext):
     assistant.start(ctx.room)
 
     await asyncio.sleep(1)
-    await assistant.say("Hi there! How can I help?", allow_interruptions=True)
+    await assistant.say("Меня зовут Док. Что у тебя? Поделись проблемой", allow_interruptions=True)
 
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
         video_track = await get_video_track(ctx.room)
