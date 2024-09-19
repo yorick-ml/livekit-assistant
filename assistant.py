@@ -13,8 +13,9 @@ from livekit.agents.voice_assistant import VoiceAssistant, AssistantCallContext
 from livekit.plugins import deepgram, openai, silero
 
 # Настройка базового логирования
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class AssistantFunction(agents.llm.FunctionContext):
