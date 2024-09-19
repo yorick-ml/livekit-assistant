@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import Annotated
 
 from livekit import agents, rtc
@@ -10,6 +11,10 @@ from livekit.agents.llm import (
 )
 from livekit.agents.voice_assistant import VoiceAssistant
 from livekit.plugins import deepgram, openai, silero
+
+# Настройка базового логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class AssistantFunction(agents.llm.FunctionContext):
@@ -30,13 +35,14 @@ class AssistantFunction(agents.llm.FunctionContext):
             ),
         ],
     ):
-        print(f"Message triggering vision capabilities: {user_msg}")
+        logger.info(f"Message triggering vision capabilities: {user_msg}")
         return None
 
 
 async def get_video_track(room: rtc.Room):
     """Get the first video track from the room. We'll use this track to process images."""
 
+    logger.info("Getting video track from the room")
     video_track = asyncio.Future[rtc.RemoteVideoTrack]()
 
     for _, participant in room.remote_participants.items():
@@ -45,15 +51,16 @@ async def get_video_track(room: rtc.Room):
                 track_publication.track, rtc.RemoteVideoTrack
             ):
                 video_track.set_result(track_publication.track)
-                print(f"Using video track {track_publication.track.sid}")
+                logger.info(f"Using video track {track_publication.track.sid}")
                 break
 
     return await video_track
 
 
 async def entrypoint(ctx: JobContext):
+    logger.info("Connecting to the room")
     await ctx.connect()
-    print(f"Room name: {ctx.room.name}")
+    logger.info(f"Room name: {ctx.room.name}")
 
     chat_context = ChatContext(
         messages=[
@@ -94,6 +101,7 @@ async def entrypoint(ctx: JobContext):
         Answer the user's message with the given text and optionally the latest
         image captured from the video track.
         """
+        logger.info(f"Answering user's message: {text}")
         content: list[str | ChatImage] = [text]
         if use_image and latest_image:
             content.append(ChatImage(image=latest_image))
@@ -106,6 +114,7 @@ async def entrypoint(ctx: JobContext):
     @chat.on("message_received")
     def on_message_received(msg: rtc.ChatMessage):
         """This event triggers whenever we get a new message from the user."""
+        logger.info(f"Received message: {msg.message}")
 
         if msg.message:
             asyncio.create_task(_answer(msg.message, use_image=False))
@@ -113,6 +122,7 @@ async def entrypoint(ctx: JobContext):
     @assistant.on("function_calls_finished")
     def on_function_calls_finished(called_functions: list[agents.llm.CalledFunction]):
         """This event triggers when an assistant's function call completes."""
+        logger.info("Function calls finished")
 
         if len(called_functions) == 0:
             return
@@ -121,11 +131,14 @@ async def entrypoint(ctx: JobContext):
         if user_msg:
             asyncio.create_task(_answer(user_msg, use_image=True))
 
+    logger.info("Starting assistant")
     assistant.start(ctx.room)
 
     await asyncio.sleep(1)
+    logger.info("Greeting the user")
     await assistant.say("Hi there! How can I help?", allow_interruptions=True)
 
+    logger.info("Entering main loop")
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
         video_track = await get_video_track(ctx.room)
 
