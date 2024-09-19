@@ -31,8 +31,7 @@ class AssistantFunction(agents.llm.FunctionContext):
         user_msg: Annotated[
             str,
             agents.llm.TypeInfo(
-                description="The user message that triggered this function"
-            ),
+                description="The user message that triggered this function"),
         ],
     ):
         logger.info(f"Message triggering vision capabilities: {user_msg}")
