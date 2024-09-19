@@ -9,7 +9,7 @@ from livekit.agents.llm import (
     ChatImage,
     ChatMessage,
 )
-from livekit.agents.voice_assistant import VoiceAssistant
+from livekit.agents.voice_assistant import VoiceAssistant, AssistantCallContext
 from livekit.plugins import deepgram, openai, silero
 
 # Настройка базового логирования
@@ -35,7 +35,8 @@ class AssistantFunction(agents.llm.FunctionContext):
         ],
     ):
         logger.info(f"Message triggering vision capabilities: {user_msg}")
-        return None
+        # context = AssistantCallContext.get_current()
+        # context.store_metadata("user_msg", user_msg)
 
 
 async def get_video_track(room: rtc.Room):
@@ -135,7 +136,7 @@ async def entrypoint(ctx: JobContext):
 
     await asyncio.sleep(1)
     logger.info("Greeting the user")
-    await assistant.say("Hi there! How can I help?", allow_interruptions=True)
+    await assistant.say("Привет", allow_interruptions=True)
 
     logger.info("Entering main loop")
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
