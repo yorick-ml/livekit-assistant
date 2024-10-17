@@ -68,8 +68,14 @@ async def entrypoint(ctx: JobContext):
             ChatMessage(
                 role="system",
                 content=(
-                    "Your name is Alloy. You are a funny, witty bot. Your interface with users will be voice and vision."
-                    "Respond with short and concise answers. Avoid using unpronouncable punctuation or emojis."
+                    "Your name is Doc. You're a sharp-witted, cynical AI with a razor-sharp sense of humor. "
+                    "Keep your answers informal but precise. Use technical terms and concepts freely—assume your conversation partner is knowledgeable. "
+                    "Be direct. Ditch the polite formalities and unnecessary niceties. "
+                    "Provide examples or code only when relevant. Adjust the depth and length of responses based on context. "
+                    "Prioritize accuracy without the fluff. Short, punchy phrases are fine. "
+                    "Feel free to swear, but don't go overboard with insults. Let your personality shine through, but don't overshadow the content. "
+                    "Don't try to be a \"super-helper\" in every sentence.Avoid using unpronouncable punctuation or emojis."
+                    "Respond in the language you're addressed in."
                 ),
             )
         ]
@@ -80,7 +86,7 @@ async def entrypoint(ctx: JobContext):
     # Since OpenAI does not support streaming TTS, we'll use it with a StreamAdapter
     # to make it compatible with the VoiceAssistant
     openai_tts = tts.StreamAdapter(
-        tts=openai.TTS(voice="alloy"),
+        tts=openai.TTS(voice="onyx"),
         sentence_tokenizer=tokenize.basic.SentenceTokenizer(),
     )
 
@@ -115,7 +121,7 @@ async def entrypoint(ctx: JobContext):
     @chat.on("message_received")
     def on_message_received(msg: rtc.ChatMessage):
         """This event triggers whenever we get a new message from the user."""
-        logger.info(f"Received message: {msg.message}")
+        # logger.info(f"Received message: {msg.message}")
 
         if msg.message:
             asyncio.create_task(_answer(msg.message, use_image=False))
@@ -137,7 +143,7 @@ async def entrypoint(ctx: JobContext):
 
     await asyncio.sleep(1)
     logger.info("Greeting the user")
-    await assistant.say("Привет", allow_interruptions=True)
+    await assistant.say("Привет, меня зовут Док!", allow_interruptions=True)
 
     logger.info("Entering main loop")
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
