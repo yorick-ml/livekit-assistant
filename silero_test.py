@@ -22,5 +22,5 @@ audio_paths = model.save_wav(text=example_text,
                              speaker=speaker,
                              sample_rate=sample_rate)
 
-audio = AudioSegment.from_wav(audio_paths[0])
+audio = AudioSegment.from_wav(audio_paths)
 play(audio)

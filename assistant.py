@@ -83,7 +83,7 @@ async def entrypoint(ctx: JobContext):
         vad=silero.VAD.load(),  # We'll use Silero's Voice Activity Detector (VAD)
         stt=deepgram.STT(),  # We'll use Deepgram's Speech To Text (STT)
         llm=gpt,
-        tts=None,  # We'll use OpenAI's Text To Speech (TTS)
+        tts=openai_tts,  # We'll use OpenAI's Text To Speech (TTS)
         fnc_ctx=AssistantFunction(),
         chat_ctx=chat_context,
     )
