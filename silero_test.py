@@ -18,9 +18,12 @@ example_text = 'В недрах тундры выдры в г+етрах т+ыр
 sample_rate = 48000
 speaker='baya'
 
-audio_paths = model.save_wav(text=example_text,
-                             speaker=speaker,
-                             sample_rate=sample_rate)
+current_dir = os.getcwd()
+audio_path = os.path.join(current_dir, 'output.wav')
+model.save_wav(text=example_text,
+               speaker=speaker,
+               sample_rate=sample_rate,
+               audio_path=audio_path)
 
-audio = AudioSegment.from_wav(audio_paths)
+audio = AudioSegment.from_wav(audio_path)
 play(audio)
