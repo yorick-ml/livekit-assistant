@@ -1,5 +1,6 @@
 import os
 import torch
+import simpleaudio as sa
 
 device = torch.device('cpu')
 torch.set_num_threads(4)
@@ -19,3 +20,7 @@ speaker='baya'
 audio_paths = model.save_wav(text=example_text,
                              speaker=speaker,
                              sample_rate=sample_rate)
+
+wave_obj = sa.WaveObject.from_wave_file(audio_paths[0])
+play_obj = wave_obj.play()
+play_obj.wait_done()
