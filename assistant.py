@@ -68,22 +68,23 @@ async def entrypoint(ctx: JobContext):
         ]
     )
 
-    gpt = openai.LLM(model="gpt-4o")
+    # gpt = openai.LLM(model="gpt-4o")
+    gpt = openai.LLM(base_url='http://192.168.88.56:11434/v1', temperature=0.5, model='codeqwen:chat')
 
     # Since OpenAI does not support streaming TTS, we'll use it with a StreamAdapter
     # to make it compatible with the VoiceAssistant
-    openai_tts = tts.StreamAdapter(
-        tts=openai.TTS(voice="onyx"),
-        sentence_tokenizer=tokenize.basic.SentenceTokenizer(),
-    )
+    # openai_tts = tts.StreamAdapter(
+    #     tts=openai.TTS(voice="onyx"),
+    #     sentence_tokenizer=tokenize.basic.SentenceTokenizer(),
+    # )
 
     latest_image: rtc.VideoFrame | None = None
 
     assistant = VoiceAssistant(
         vad=silero.VAD.load(),  # We'll use Silero's Voice Activity Detector (VAD)
-        stt=deepgram.STT(),  # We'll use Deepgram's Speech To Text (STT)
+        stt= openai.STT(model="whisper-2", base_url='http://192.168.88.56:8000/v1/'),
         llm=gpt,
-        tts=openai_tts,  # We'll use OpenAI's Text To Speech (TTS)
+        tts=silero.TTS(model='silero_tts', model_id='v3_en', language='en', sample_rate=8000, speaker='en_0'),
         fnc_ctx=AssistantFunction(),
         chat_ctx=chat_context,
     )
