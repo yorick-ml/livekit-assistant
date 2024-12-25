@@ -3,14 +3,15 @@ import logging
 from typing import Annotated
 
 from livekit import agents, rtc
-from livekit.agents import JobContext, WorkerOptions, cli, tokenize, tts
+from livekit.agents import JobContext, WorkerOptions, cli, tts, tokenize
 from livekit.agents.llm import (
     ChatContext,
     ChatImage,
     ChatMessage,
 )
 from livekit.agents.voice_assistant import VoiceAssistant, AssistantCallContext
-from livekit.plugins import deepgram, openai, silero
+from livekit.plugins import openai, silero
+
 
 # Настройка базового логирования
 logging.basicConfig(level=logging.WARNING)
@@ -68,31 +69,25 @@ async def entrypoint(ctx: JobContext):
             ChatMessage(
                 role="system",
                 content=(
-                    "Тебя зовут Доктор. Ты - бот, эксперт по психологии. Твоя задача - помочь собеседнику разобраться с проблемами."
+                    "Тебя зовут Доктор. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
                     "Твой интерфейс с пользователями будет голосом и зрением."
-                    "Отвечай кратко и лаконично. Избегай использования непроизносимых знаков препинания или эмоций"
+                    "Отвечай кратко и лаконично на русском языке. Избегай использования непроизносимых знаков препинания или эмоций"
                 ),
             )
         ]
     )
 
-    # gpt = openai.LLM(model="gpt-4o")
-    gpt = openai.LLM(base_url='http://192.168.88.56:11434/v1', temperature=0.5, model='codeqwen:chat')
-
-    # Since OpenAI does not support streaming TTS, we'll use it with a StreamAdapter
-    # to make it compatible with the VoiceAssistant
-    # openai_tts = tts.StreamAdapter(
-    #     tts=openai.TTS(voice="onyx"),
-    #     sentence_tokenizer=tokenize.basic.SentenceTokenizer(),
-    # )
+    gpt = openai.LLM(base_url='http://192.168.88.56:11434/v1', model='qwen2.5:7b-instruct-q8_0')
 
     latest_image: rtc.VideoFrame | None = None
 
     assistant = VoiceAssistant(
         vad=silero.VAD.load(),  # We'll use Silero's Voice Activity Detector (VAD)
-        stt= openai.STT(model="whisper-2", base_url='http://192.168.88.56:8000/v1/'),
+        stt=openai.STT(language='ru', base_url='http://192.168.88.56:8000/v1/'),
         llm=gpt,
-        tts=silero.TTS(model='silero_tts', model_id='v3_en', language='en', sample_rate=8000, speaker='en_0'),
+        tts=tts.StreamAdapter(tts=silero.tts.TTS(model='silero_tts', model_id='v4_ru', language='ru', sample_rate=24000, speaker='aidar', cpu_cores=8),
+                sentence_tokenizer=tokenize.basic.SentenceTokenizer()
+                              ),
         fnc_ctx=AssistantFunction(),
         chat_ctx=chat_context,
     )
@@ -138,8 +133,7 @@ async def entrypoint(ctx: JobContext):
 
     await asyncio.sleep(1)
     logger.info("Greeting the user")
-    await assistant.say("Привет, меня зовут Док!", allow_interruptions=True)
-    await assistant.say("Меня зовут Док. Что у тебя? Поделись проблемой", allow_interruptions=True)
+    await assistant.say("Привет, бро! Как дела?", allow_interruptions=True)
 
     logger.info("Entering main loop")
     while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
