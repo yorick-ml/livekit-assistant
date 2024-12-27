@@ -14,53 +14,53 @@ from livekit.plugins import openai, silero
 
 
 # Настройка логирования
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("assistant")
 logger.setLevel(logging.INFO)
 handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-handler.setFormatter(formatter)
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
-class AssistantFunction(agents.llm.FunctionContext):
-    """This class is used to define functions that will be called by the assistant."""
+# class AssistantFunction(agents.llm.FunctionContext):
+#     """This class is used to define functions that will be called by the assistant."""
+#
+#     @agents.llm.ai_callable(
+#         description=(
+#             "Called when asked to evaluate something that would require vision capabilities,"
+#             "for example, an image, video, or the webcam feed."
+#         )
+#     )
+#     async def image(
+#         self,
+#         user_msg: Annotated[
+#             str,
+#             agents.llm.TypeInfo(
+#                 description="The user message that triggered this function"),
+#         ],
+#     ):
+#         logger.info(f"Message triggering vision capabilities: {user_msg}")
+#         # context = AssistantCallContext.get_current()
+#         # context.store_metadata("user_msg", user_msg)
+#
 
-    @agents.llm.ai_callable(
-        description=(
-            "Called when asked to evaluate something that would require vision capabilities,"
-            "for example, an image, video, or the webcam feed."
-        )
-    )
-    async def image(
-        self,
-        user_msg: Annotated[
-            str,
-            agents.llm.TypeInfo(
-                description="The user message that triggered this function"),
-        ],
-    ):
-        logger.info(f"Message triggering vision capabilities: {user_msg}")
-        # context = AssistantCallContext.get_current()
-        # context.store_metadata("user_msg", user_msg)
-
-
-async def get_video_track(room: rtc.Room):
-    """Get the first video track from the room. We'll use this track to process images."""
-
-    logger.info("Getting video track from the room")
-    video_track = asyncio.Future[rtc.RemoteVideoTrack]()
-
-    for _, participant in room.remote_participants.items():
-        for _, track_publication in participant.track_publications.items():
-            if track_publication.track is not None and isinstance(
-                track_publication.track, rtc.RemoteVideoTrack
-            ):
-                video_track.set_result(track_publication.track)
-                logger.info(f"Using video track {track_publication.track.sid}")
-                break
-
-    return await video_track
-
+# async def get_video_track(room: rtc.Room):
+#     """Get the first video track from the room. We'll use this track to process images."""
+#
+#     logger.info("Getting video track from the room")
+#     video_track = asyncio.Future[rtc.RemoteVideoTrack]()
+#
+#     for _, participant in room.remote_participants.items():
+#         for _, track_publication in participant.track_publications.items():
+#             if track_publication.track is not None and isinstance(
+#                 track_publication.track, rtc.RemoteVideoTrack
+#             ):
+#                 video_track.set_result(track_publication.track)
+#                 logger.info(f"Using video track {track_publication.track.sid}")
+#                 break
+#
+#     return await video_track
+#
 
 async def entrypoint(ctx: JobContext):
     logger.info("Connecting to the room")
@@ -90,7 +90,7 @@ async def entrypoint(ctx: JobContext):
         tts=tts.StreamAdapter(tts=silero.tts.TTS(model='silero_tts', model_id='v4_ru', language='ru', sample_rate=24000, speaker='aidar', cpu_cores=8),
                 sentence_tokenizer=tokenize.basic.SentenceTokenizer()
                               ),
-        fnc_ctx=AssistantFunction(),
+        # fnc_ctx=AssistantFunction(),
         chat_ctx=chat_context,
     )
 
@@ -120,33 +120,41 @@ async def entrypoint(ctx: JobContext):
         if msg.message:
             asyncio.create_task(_answer(msg.message, use_image=False))
 
-    @assistant.on("function_calls_finished")
-    def on_function_calls_finished(called_functions: list[agents.llm.CalledFunction]):
-        """This event triggers when an assistant's function call completes."""
-        logger.info("Function calls finished")
+    # @assistant.on("function_calls_finished")
+    # def on_function_calls_finished(called_functions: list[agents.llm.CalledFunction]):
+    #     """This event triggers when an assistant's function call completes."""
+    #     logger.info("Function calls finished")
+    #
+    #     if len(called_functions) == 0:
+    #         return
+    #
+    #     user_msg = called_functions[0].call_info.arguments.get("user_msg")
+    #     if user_msg:
+    #         asyncio.create_task(_answer(user_msg, use_image=True))
 
-        if len(called_functions) == 0:
-            return
+    @assistant.on("agent_speech_committed")
+    def on_agent_speech_committed(msg):
+        logger.info(f"AGENT: {msg.content}")
 
-        user_msg = called_functions[0].call_info.arguments.get("user_msg")
-        if user_msg:
-            asyncio.create_task(_answer(user_msg, use_image=True))
+    @assistant.on("user_speech_committed")
+    def on_user_speech_committed(msg):
+        logger.info(f"USER: {msg.content}")
 
     logger.info("Starting assistant")
     assistant.start(ctx.room)
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(0.1)
     logger.info("Greeting the user")
     await assistant.say("Привет, бро! Как дела?", allow_interruptions=True)
 
     logger.info("Entering main loop")
-    while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
-        video_track = await get_video_track(ctx.room)
-
-        async for event in rtc.VideoStream(video_track):
-            # We'll continually grab the latest image from the video track
-            # and store it in a variable.
-            latest_image = event.frame
+    # while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
+    #     video_track = await get_video_track(ctx.room)
+    #
+    #     async for event in rtc.VideoStream(video_track):
+    #         # We'll continually grab the latest image from the video track
+    #         # and store it in a variable.
+    #         latest_image = event.frame
 
 
 if __name__ == "__main__":
