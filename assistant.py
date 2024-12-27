@@ -69,9 +69,8 @@ async def entrypoint(ctx: JobContext):
             ChatMessage(
                 role="system",
                 content=(
-                    "Тебя зовут Доктор. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
-                    "Твой интерфейс с пользователями будет голосом и зрением."
-                    "Отвечай кратко и лаконично на русском языке. Избегай использования непроизносимых знаков препинания или эмоций"
+                    "Тебя зовут Псих. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
+                    "Отвечай на русском языке. Избегай использования непроизносимых знаков препинания или эмоций"
                 ),
             )
         ]
@@ -100,6 +99,7 @@ async def entrypoint(ctx: JobContext):
         image captured from the video track.
         """
         logger.info(f"Answering user's message: {text}")
+        print(f"Answering user's message: {text}")
         content: list[str | ChatImage] = [text]
         if use_image and latest_image:
             content.append(ChatImage(image=latest_image))
@@ -113,6 +113,7 @@ async def entrypoint(ctx: JobContext):
     def on_message_received(msg: rtc.ChatMessage):
         """This event triggers whenever we get a new message from the user."""
 
+        print(f"message received {msg.message}")
         if msg.message:
             asyncio.create_task(_answer(msg.message, use_image=False))
 
