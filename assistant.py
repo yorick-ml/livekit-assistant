@@ -13,10 +13,13 @@ from livekit.agents.voice_assistant import VoiceAssistant, AssistantCallContext
 from livekit.plugins import openai, silero
 
 
-# Настройка базового логирования
-logging.basicConfig(level=logging.WARNING)
+# Настройка логирования
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+handler = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 
 class AssistantFunction(agents.llm.FunctionContext):
