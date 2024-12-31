@@ -22,4 +22,4 @@ ENV PYTHONUNBUFFERED=1
 RUN python assistant.py download-files
 
 # Затем запускаем основной процесс
-CMD ["python", "assistant.py", "start", "--drain-timeout=180"]
+CMD ["python", "assistant.py", "start"]
