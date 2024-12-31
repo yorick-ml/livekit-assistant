@@ -4,4 +4,5 @@ livekit-plugins-openai
 livekit-plugins-silero
 livekit-protocol
 torch
+omegaconf
 python-dotenv
