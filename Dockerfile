@@ -15,9 +15,6 @@ RUN pip install --no-cache-dir -r requirements.txt livekit_plugins_silero-0.7.4-
 # Copy application code
 COPY . .
 
-# Copy .env_sample as .env
-COPY .env_sample .env
-
 # Set Python to unbuffered mode
 ENV PYTHONUNBUFFERED=1
 
