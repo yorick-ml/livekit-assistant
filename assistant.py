@@ -9,9 +9,7 @@ load_dotenv()
 # Проверяем обязательные переменные окружения
 required_env_vars = [
     'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
-    'ASSISTANT_PROMPT', 'GREETING',
-    'SILERO_MODEL', 'SILERO_MODEL_ID', 'SILERO_LANGUAGE',
-    'SILERO_SAMPLE_RATE', 'SILERO_SPEAKER', 'SILERO_CPU_CORES'
+    'ASSISTANT_PROMPT', 'GREETING'
 ]
 
 missing_vars = [var for var in required_env_vars if not os.getenv(var)]
