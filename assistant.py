@@ -5,6 +5,19 @@ from dotenv import load_dotenv
 
 # Загружаем переменные окружения из .env
 load_dotenv()
+
+# Проверяем обязательные переменные окружения
+required_env_vars = [
+    'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
+    'SILERO_MODEL', 'SILERO_MODEL_ID', 'SILERO_LANGUAGE',
+    'SILERO_SAMPLE_RATE', 'SILERO_SPEAKER', 'SILERO_CPU_CORES',
+    'ASSISTANT_PROMPT', 'GREETING'
+]
+
+missing_vars = [var for var in required_env_vars if not os.getenv(var)]
+if missing_vars:
+    raise ValueError(f"Отсутствуют обязательные переменные окружения: {', '.join(missing_vars)}")
+
 from typing import Annotated
 
 from livekit import agents, rtc
