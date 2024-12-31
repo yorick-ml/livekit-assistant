@@ -18,4 +18,8 @@ COPY . .
 # Set Python to unbuffered mode
 ENV PYTHONUNBUFFERED=1
 
-CMD ["python", "assistant.py"]
+# Сначала загружаем необходимые файлы
+RUN python assistant.py download-files
+
+# Затем запускаем основной процесс
+CMD ["python", "assistant.py", "start"]
