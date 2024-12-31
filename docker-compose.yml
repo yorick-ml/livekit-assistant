@@ -4,8 +4,6 @@ services:
   assistant:
     build: .
     container_name: assistant
-    volumes:
-      - ./.env:/app/.env
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped
