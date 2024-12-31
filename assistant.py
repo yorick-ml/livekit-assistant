@@ -9,7 +9,7 @@ load_dotenv()
 # Проверяем обязательные переменные окружения
 required_env_vars = [
     'LIVEKIT_API_KEY', 'LIVEKIT_API_SECRET', 'LIVEKIT_URL',
-    'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
+    'OPENAI_API_KEY', 'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
     'ASSISTANT_PROMPT', 'GREETING'
 ]
 
