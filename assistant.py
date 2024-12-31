@@ -9,14 +9,20 @@ load_dotenv()
 # Проверяем обязательные переменные окружения
 required_env_vars = [
     'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
-    'SILERO_MODEL', 'SILERO_MODEL_ID', 'SILERO_LANGUAGE',
-    'SILERO_SAMPLE_RATE', 'SILERO_SPEAKER', 'SILERO_CPU_CORES',
     'ASSISTANT_PROMPT', 'GREETING'
 ]
 
 missing_vars = [var for var in required_env_vars if not os.getenv(var)]
 if missing_vars:
     raise ValueError(f"Отсутствуют обязательные переменные окружения: {', '.join(missing_vars)}")
+
+# Устанавливаем значения по умолчанию для параметров Silero
+SILERO_MODEL = os.getenv('SILERO_MODEL', 'silero_tts')
+SILERO_MODEL_ID = os.getenv('SILERO_MODEL_ID', 'v4_ru')
+SILERO_LANGUAGE = os.getenv('SILERO_LANGUAGE', 'ru')
+SILERO_SAMPLE_RATE = int(os.getenv('SILERO_SAMPLE_RATE', '24000'))
+SILERO_SPEAKER = os.getenv('SILERO_SPEAKER', 'aidar')
+SILERO_CPU_CORES = int(os.getenv('SILERO_CPU_CORES', '8'))
 
 from typing import Annotated
 
@@ -98,12 +104,12 @@ async def entrypoint(ctx: JobContext):
         stt=openai.STT(language='ru', base_url=os.getenv('STT_BASE_URL')),
         llm=gpt,
         tts=tts.StreamAdapter(tts=silero.tts.TTS(
-            model=os.getenv('SILERO_MODEL'),
-            model_id=os.getenv('SILERO_MODEL_ID'),
-            language=os.getenv('SILERO_LANGUAGE'),
-            sample_rate=int(os.getenv('SILERO_SAMPLE_RATE')),
-            speaker=os.getenv('SILERO_SPEAKER'),
-            cpu_cores=int(os.getenv('SILERO_CPU_CORES'))
+            model=SILERO_MODEL,
+            model_id=SILERO_MODEL_ID,
+            language=SILERO_LANGUAGE,
+            sample_rate=SILERO_SAMPLE_RATE,
+            speaker=SILERO_SPEAKER,
+            cpu_cores=SILERO_CPU_CORES
         ),
                 sentence_tokenizer=tokenize.basic.SentenceTokenizer()
                               ),
