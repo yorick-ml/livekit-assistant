@@ -82,7 +82,7 @@ async def entrypoint(ctx: JobContext):
             ChatMessage(
                 role="system",
                 content=(
-                    "Тебя зовут Псих. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
+                    "Тебя зовут Кош. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
                     "Отвечай на русском языке. Никогда не переходи на КИТАЙСКИЙ!"
                 ),
             )
@@ -144,11 +144,11 @@ async def entrypoint(ctx: JobContext):
 
     @assistant.on("agent_speech_committed")
     def on_agent_speech_committed(msg):
-        logger.info(f"AGENT: {msg.content}")
+        print(f"AGENT: {msg.content}")
 
     @assistant.on("user_speech_committed")
     def on_user_speech_committed(msg):
-        logger.info(f"USER: {msg.content}")
+        print(f"USER: {msg.content}")
 
     logger.info("Starting assistant")
     assistant.start(ctx.room)
