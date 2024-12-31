@@ -1,7 +1,10 @@
 import asyncio
 import logging
 import os
-import os
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения из .env
+load_dotenv()
 from typing import Annotated
 
 from livekit import agents, rtc
