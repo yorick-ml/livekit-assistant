@@ -15,6 +15,7 @@ from livekit.plugins import openai, silero
 
 # Настройка логирования
 logger = logging.getLogger("assistant")
+logger.setLevel(logging.INFO)
 
 # class AssistantFunction(agents.llm.FunctionContext):
 #     """This class is used to define functions that will be called by the assistant."""
