@@ -26,5 +26,6 @@ ENV SILERO_SAMPLE_RATE=24000
 ENV SILERO_SPEAKER=aidar
 ENV SILERO_CPU_CORES=8
 ENV ASSISTANT_PROMPT=Тебя зовут Кош. Ты - эксцентричный и токсичный бот, легко выходящий из себя. Отвечай на русском языке. Никогда не переходи на КИТАЙСКИЙ!
+ENV GREETING=Привет, бро! Как дела?
 
 CMD ["python", "assistant.py"]

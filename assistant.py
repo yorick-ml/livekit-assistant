@@ -146,7 +146,7 @@ async def entrypoint(ctx: JobContext):
 
     await asyncio.sleep(0.1)
     logger.info("Greeting the user")
-    await assistant.say("Привет, бро! Как дела?", allow_interruptions=True)
+    await assistant.say(os.getenv('GREETING'), allow_interruptions=True)
 
     logger.info("Entering main loop")
     # while ctx.room.connection_state == rtc.ConnectionState.CONN_CONNECTED:
