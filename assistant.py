@@ -84,7 +84,14 @@ async def entrypoint(ctx: JobContext):
         vad=silero.VAD.load(),  # We'll use Silero's Voice Activity Detector (VAD)
         stt=openai.STT(language='ru', base_url=os.getenv('STT_BASE_URL')),
         llm=gpt,
-        tts=tts.StreamAdapter(tts=silero.tts.TTS(model='silero_tts', model_id='v4_ru', language='ru', sample_rate=24000, speaker='aidar', cpu_cores=8),
+        tts=tts.StreamAdapter(tts=silero.tts.TTS(
+            model=os.getenv('SILERO_MODEL'),
+            model_id=os.getenv('SILERO_MODEL_ID'),
+            language=os.getenv('SILERO_LANGUAGE'),
+            sample_rate=int(os.getenv('SILERO_SAMPLE_RATE')),
+            speaker=os.getenv('SILERO_SPEAKER'),
+            cpu_cores=int(os.getenv('SILERO_CPU_CORES'))
+        ),
                 sentence_tokenizer=tokenize.basic.SentenceTokenizer()
                               ),
         # fnc_ctx=AssistantFunction(),
