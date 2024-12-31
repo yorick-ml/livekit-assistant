@@ -68,10 +68,7 @@ async def entrypoint(ctx: JobContext):
         messages=[
             ChatMessage(
                 role="system",
-                content=(
-                    "Тебя зовут Кош. Ты - эксцентричный и токсичный бот, легко выходящий из себя."
-                    "Отвечай на русском языке. Никогда не переходи на КИТАЙСКИЙ!"
-                ),
+                content=os.getenv('ASSISTANT_PROMPT'),
             )
         ]
     )
