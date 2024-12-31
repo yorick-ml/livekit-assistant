@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from typing import Annotated
 
 from livekit import agents, rtc
@@ -74,13 +75,13 @@ async def entrypoint(ctx: JobContext):
         ]
     )
 
-    gpt = openai.LLM(base_url='http://192.168.88.56:11434/v1', model='qwen2.5:7b-instruct-q8_0')
+    gpt = openai.LLM(base_url=os.getenv('OPENAI_BASE_URL'), model=os.getenv('OPENAI_MODEL'))
 
     latest_image: rtc.VideoFrame | None = None
 
     assistant = VoiceAssistant(
         vad=silero.VAD.load(),  # We'll use Silero's Voice Activity Detector (VAD)
-        stt=openai.STT(language='ru', base_url='http://192.168.88.56:8000/v1/'),
+        stt=openai.STT(language='ru', base_url=os.getenv('STT_BASE_URL')),
         llm=gpt,
         tts=tts.StreamAdapter(tts=silero.tts.TTS(model='silero_tts', model_id='v4_ru', language='ru', sample_rate=24000, speaker='aidar', cpu_cores=8),
                 sentence_tokenizer=tokenize.basic.SentenceTokenizer()
