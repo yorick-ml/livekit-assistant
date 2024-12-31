@@ -9,20 +9,22 @@ load_dotenv()
 # Проверяем обязательные переменные окружения
 required_env_vars = [
     'OPENAI_BASE_URL', 'OPENAI_MODEL', 'STT_BASE_URL',
-    'ASSISTANT_PROMPT', 'GREETING'
+    'ASSISTANT_PROMPT', 'GREETING',
+    'SILERO_MODEL', 'SILERO_MODEL_ID', 'SILERO_LANGUAGE',
+    'SILERO_SAMPLE_RATE', 'SILERO_SPEAKER', 'SILERO_CPU_CORES'
 ]
 
 missing_vars = [var for var in required_env_vars if not os.getenv(var)]
 if missing_vars:
     raise ValueError(f"Отсутствуют обязательные переменные окружения: {', '.join(missing_vars)}")
 
-# Устанавливаем значения по умолчанию для параметров Silero
-SILERO_MODEL = os.getenv('SILERO_MODEL', 'silero_tts')
-SILERO_MODEL_ID = os.getenv('SILERO_MODEL_ID', 'v4_ru')
-SILERO_LANGUAGE = os.getenv('SILERO_LANGUAGE', 'ru')
-SILERO_SAMPLE_RATE = int(os.getenv('SILERO_SAMPLE_RATE', '24000'))
-SILERO_SPEAKER = os.getenv('SILERO_SPEAKER', 'aidar')
-SILERO_CPU_CORES = int(os.getenv('SILERO_CPU_CORES', '8'))
+# Получаем параметры Silero из переменных окружения
+SILERO_MODEL = os.getenv('SILERO_MODEL')
+SILERO_MODEL_ID = os.getenv('SILERO_MODEL_ID')
+SILERO_LANGUAGE = os.getenv('SILERO_LANGUAGE')
+SILERO_SAMPLE_RATE = int(os.getenv('SILERO_SAMPLE_RATE')) if os.getenv('SILERO_SAMPLE_RATE') else None
+SILERO_SPEAKER = os.getenv('SILERO_SPEAKER')
+SILERO_CPU_CORES = int(os.getenv('SILERO_CPU_CORES')) if os.getenv('SILERO_CPU_CORES') else None
 
 from typing import Annotated
 
