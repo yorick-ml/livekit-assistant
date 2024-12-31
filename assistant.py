@@ -14,23 +14,7 @@ from livekit.plugins import openai, silero
 
 
 # Настройка логирования
-# Удаляем все существующие обработчики у корневого логгера
-root_logger = logging.getLogger()
-for handler in root_logger.handlers[:]:
-    root_logger.removeHandler(handler)
-
-# Создаем и настраиваем наш обработчик
-handler = logging.StreamHandler()
-formatter = logging.Formatter('%(message)s')  # Выводим только само сообщение
-handler.setFormatter(formatter)
-
-# Применяем наш обработчик к корневому логгеру
-root_logger.addHandler(handler)
-root_logger.setLevel(logging.INFO)
-
-# Создаем логгер для нашего ассистента
 logger = logging.getLogger("assistant")
-
 
 # class AssistantFunction(agents.llm.FunctionContext):
 #     """This class is used to define functions that will be called by the assistant."""
