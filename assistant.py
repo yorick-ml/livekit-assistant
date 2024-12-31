@@ -106,12 +106,14 @@ async def entrypoint(ctx: JobContext):
         stt=openai.STT(language='ru', base_url=os.getenv('STT_BASE_URL')),
         llm=gpt,
         tts=tts.StreamAdapter(tts=silero.tts.TTS(
-            model=SILERO_MODEL,
-            model_id=SILERO_MODEL_ID,
-            language=SILERO_LANGUAGE,
-            sample_rate=SILERO_SAMPLE_RATE,
-            speaker=SILERO_SPEAKER,
-            cpu_cores=SILERO_CPU_CORES
+            **{k: v for k, v in {
+                'model': SILERO_MODEL,
+                'model_id': SILERO_MODEL_ID,
+                'language': SILERO_LANGUAGE,
+                'sample_rate': SILERO_SAMPLE_RATE,
+                'speaker': SILERO_SPEAKER,
+                'cpu_cores': SILERO_CPU_CORES
+            }.items() if v is not None}
         ),
                 sentence_tokenizer=tokenize.basic.SentenceTokenizer()
                               ),
